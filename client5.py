@@ -29,19 +29,18 @@ def now_time():
 
 def send_func():
     while True:
-        send_data = input('당신 : ')
+        send_data = input('you : ')
         client_sock.send(send_data.encode('utf-8'))
         if send_data == '!quit':
-            print('연결을 종료하였습니다.')
+            print('connection terminated.')
             break
         elif send_data=='!start':
             try:
                 client_sock.send(send_data.encode())
-                timerRun(goaltime_hour,goaltime_min,currsecond) #지역변수 문제
+                timerRun(goaltime_hour,goaltime_min,currsecond)
             except KeyboardInterrupt:
                 send_data='!stoptimer'
                 client_sock.send(send_data.encode())
-            #시작 구현되면 수정할것
 
 
 
@@ -92,7 +91,7 @@ def timerRun(lefthour, leftminute, currsecond):
 
             timeformat_timer="{:02d}:{:02d}:{:02d}".format(realLeftHour,realLeftMinute,realLeftSecond) #타이머 표시
             timeformat_sw= "{:02d}:{:02d}:{:02d}".format(currHour, currMin, currSec)   #스톱워치 표시
-            print("\x08" * 50 + "종료까지: "+timeformat_timer+"  남은 시간: "+timeformat_sw, end='')
+            print("\x08" * 50 + "until the end: "+timeformat_timer+"  left time: "+timeformat_sw, end='')
 
 
             leftsecond-=1
@@ -100,13 +99,13 @@ def timerRun(lefthour, leftminute, currsecond):
 
     except KeyboardInterrupt:
 
-        print("\n타이머를 중단했습니다.")
+        print("\ntimer stopped..")
         leftsecond = realLeftHour * 3600 + realLeftMinute * 60
 
 
         lefttime_fm="{:02d}:{:02d}:{:02d}".format(realLeftHour,realLeftMinute,realLeftSecond)
         timeformat_sw = "{:02d}:{:02d}:{:02d}".format(currHour, currMin, currsecond)
-        print("남은 시간: ",lefttime_fm)
+        print("left time: ",lefttime_fm)
 
 
         pass
@@ -135,16 +134,16 @@ else:
     print('[SYSTEM] 서버와 연결되었습니다.')
 
 
-declStart = input("로그인을 원하시면 로그인을 입력해주세요 ! ")  # GUI 생기면 버튼으로 대체
+declStart = input("if you want to login, enter "login" ")  # GUI 생기면 버튼으로 대체
 
-if declStart=="로그인":
+if declStart=="login":
 
     while True:
 
-        cname = str(input('사용하실 닉네임을 입력하세요 :'))
+        cname = str(input('enter name :'))
 
         if ' ' in cname:
-            print('공백은 입력이 불가능합니다.')
+            print('Spaces are not allowed.')
             continue
 
         client_sock.send(cname.encode())
@@ -152,40 +151,38 @@ if declStart=="로그인":
 
         if is_possible_name == 'yes':
 
-            print("입장했습니다.")
             client_sock.send('!enter'.encode())
 
-            goaltime_hour = int(input('목표 시간(hour): '))
+            goaltime_hour = int(input('goaltime(hour): '))
             client_sock.send((str(goaltime_hour)).encode())
 
-            goaltime_min = int(input('목표 시간(min): '))
+            goaltime_min = int(input('goaltime(min): '))
             client_sock.send((str(goaltime_min)).encode())
 
-            goaltime_sec = int(input('목표 시간(sec): '))
+            goaltime_sec = int(input('goaltime(sec): '))
             client_sock.send((str(goaltime_sec)).encode())
 
         elif is_possible_name == 'overlapped':
-            print('[SYSTEM] 이미 사용중인 닉네임입니다.')
+            print('[SYSTEM] The name already exists.')
 
         elif len(client_sock.recv(1024).decode()) == 0:
-            print('[SYSTEM] 서버와의 연결이 끊어졌습니다.')
+            print('[SYSTEM] The server has been disconnected.')
             client_sock.close()
             os._exit(1)
 
         while True:
             if goaltime_hour <= 0 and goaltime_min <= 0:
-                print('시간을 입력해주세요.')
+                print('Please enter the time')
                 continue
             elif (str(type(goaltime_hour)) != "<class 'int'>") or (str(type(goaltime_min)) != "<class 'int'>"):
-                print("숫자를 입력해주세요.")
+                print("Please enter the int")
                 continue
             else: break
 
-        pw = input("비밀번호를 입력해주세요 ! \n")
+        pw = input("enter password")
         client_sock.send((str(pw)).encode())
 
-        print("로그인이 완료되었습니다. \n ")
-        print(cname + "님 오늘도 열공하세요 ! ")
+        print("login completed. \n ")
 
         #timerRun(goaltime_hour,goaltime_min)
         break

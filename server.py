@@ -43,7 +43,7 @@ def send_func(lock):
             recv = received_msg_info.get()
 
             if recv[0] == '!quit' or len(recv[0]) == 0:
-                msg = str('[SYSTEM] ' + now_time() + left_member_name) + '님이 연결을 종료하였습니다.'
+                msg = str('[SYSTEM] ' + now_time() + left_member_name) + 'is left.'
 
             elif recv[0] == '!enter' or recv[0] == '!member':
                 now_member_msg = '현재 멤버 : '
@@ -52,7 +52,7 @@ def send_func(lock):
                         now_member_msg += '[' + mem + '] '
                 recv[1].send(now_member_msg.encode())
                 if (recv[0] == '!enter'):
-                    msg = str('[SYSTEM] ' + now_time() + member_name_list[recv[2]]) + '님이 입장하였습니다.'
+                    msg = str('[SYSTEM] ' + now_time() + member_name_list[recv[2]]) + 'has entered.'
                 else:
                     recv[1].send(now_member_msg.encode())
                     continue
@@ -61,13 +61,13 @@ def send_func(lock):
             elif recv[0].find('/w') == 0:           #귓속말
                 split_msg = recv[0].split()
                 if split_msg[1] in member_name_list:
-                    msg = now_time() + '(귓속말) ' + member_name_list[recv[2]] + ' : '
+                    msg = now_time() + '(whisper) ' + member_name_list[recv[2]] + ' : '
                     msg += recv[0][len(split_msg[1]) + 4:len(recv[0])]
                     idx = member_name_list.index(split_msg[1])
                     whisper_list[idx] = recv[2]
                     socket_descriptor_list[idx].send(msg.encode())
                 else:
-                    msg = '해당 사용자가 존재하지 않습니다.'
+                    msg = 'This user does not exist.'
                     recv[1].send(msg.encode())
                 continue
 
@@ -79,7 +79,7 @@ def send_func(lock):
                     socket_descriptor_list[whisper_receiver].send(msg.encode())
                     whisper_list[whisper_receiver] = recv[2]
                 else:
-                    msg = '귓속말 대상이 존재하지 않습니다.'
+                    msg = 'object does not exist.'
                     recv[1].send(bytes(msg.encode()))
                 continue
 
@@ -129,7 +129,7 @@ def recv_func(conn, count, lock):
 
         if data == '!quit' or len(data) == 0:
             lock.acquire()
-            print(str(now_time() + member_name_list[count]) + '님이 연결을 종료하였습니다.')
+            print(str(now_time() + member_name_list[count]) + 'has left.')
             left_member_name = member_name_list[count]
             socket_descriptor_list[count] = '-1'
             for i in range(len(whisper_list)):
@@ -148,7 +148,7 @@ def member_data() :
     member_frame= pd.DataFrame(member_data, columns=['member', 'time', 'password'])
 
 
-def timerRun(lefthour, leftminute, currsecond):  #시간 저장의 문제
+def timerRun(lefthour, leftminute, currsecond):
 
     leftsecond = lefthour * 3600 + leftminute * 60
 
@@ -175,13 +175,13 @@ def timerRun(lefthour, leftminute, currsecond):  #시간 저장의 문제
 
     except KeyboardInterrupt:
 
-        print("\n타이머를 중단했습니다.")
+        print("\ntimer stopped.")
         leftsecond = realLeftHour * 3600 + realLeftMinute * 60
 
 
         lefttime_fm="{:02d}:{:02d}:{:02d}".format(realLeftHour,realLeftMinute,realLeftSecond)
         timeformat_sw = "{:02d}:{:02d}:{:02d}".format(currHour, currMin, currsecond)
-        print("남은 시간: ",lefttime_fm)
+        print("time left: ",lefttime_fm)
 
         pass
 
@@ -191,7 +191,7 @@ def timerRun(lefthour, leftminute, currsecond):  #시간 저장의 문제
 #=============================================================================main
 
 
-print(now_time() + '서버를 시작합니다')
+print(now_time() + 'Start the server.')
 server_sock = socket(AF_INET, SOCK_STREAM)
 server_sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 server_sock.bind((HOST, PORT))
@@ -241,7 +241,7 @@ while True:
     member_name_list.append(client)
     socket_descriptor_list.append(conn)
     whisper_list.append(-1)
-    print(str(now_time()) + client.name + '님이 연결되었습니다. 연결 ip : ' + str(addr[0]))
+    print(str(now_time()) + client.name + 'is connected.. ip : ' + str(addr[0]))
 
     if count > 1:
         sender = Thread(target=send_func, args=(lock,))
